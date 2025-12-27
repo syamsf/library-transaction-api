@@ -52,7 +52,7 @@ RUN docker-php-ext-install \
 
 RUN pecl install redis && docker-php-ext-enable redis
 
-RUN a2enmod rewrite proxy proxy_fcgi
+RUN a2enmod rewrite proxy proxy_fcgi setenvif
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
@@ -73,19 +73,19 @@ RUN echo '<VirtualHost *:80>\n\
         Options Indexes FollowSymLinks\n\
         AllowOverride All\n\
         Require all granted\n\
+        DirectoryIndex index.php index.html\n\
     </Directory>\n\
+    \n\
+    <FilesMatch \\.php$>\n\
+        SetHandler "proxy:fcgi://127.0.0.1:9000"\n\
+    </FilesMatch>\n\
     \n\
     ErrorLog ${APACHE_LOG_DIR}/error.log\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-RUN chown -R www-data:www-data /var/www/html && \
-    chmod -R 755 /var/www/html/storage && \
-    chmod -R 755 /var/www/html/bootstrap/cache
-
 RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views,testing} && \
-    mkdir -p /var/www/html/storage/logs && \
-    chown -R www-data:www-data /var/www/html/storage
+    mkdir -p /var/www/html/storage/logs
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
     CMD curl -f http://localhost/api/health || exit 1

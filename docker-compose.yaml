@@ -39,7 +39,6 @@ services:
       - "9000:80"
     volumes:
       - .env.docker:/var/www/html/.env
-      - storage_data:/var/www/html/storage
     depends_on:
       redis:
         condition: service_healthy
@@ -55,6 +54,3 @@ volumes:
     driver: local
   redis_data:
     driver: local
-  storage_data:
-    driver: local
-
