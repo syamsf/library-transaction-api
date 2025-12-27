@@ -14,11 +14,12 @@
 
 2. **Enter the API container**
    ```bash
-   docker exec -it library-transaction-api bash
+   docker exec -it library-api bash
    ```
 
 3. **Generate application key**
    ```bash
+   chown www-data:www-data /var/www/html/.env
    php artisan key:generate
    ```
 
@@ -51,8 +52,7 @@ docker compose logs -f
 
 ### View specific service logs
 ```bash
-docker compose logs -f api
-docker compose logs -f worker
+docker compose logs -f library-api
 ```
 
 ### Restart services
